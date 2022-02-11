@@ -1,0 +1,5 @@
+---
+- hosts: app
+  become: yes
+  tasks:
+    - include: /etc/ansible/playbooks/test.yml

@@ -1,0 +1,36 @@
+- set_fact: package_name=apt-transport-https
+  when: ansible_os_family == "Debian"
+- set_fact: package_name=ca-certificates
+  when: ansible_os_family == "Debian"
+- set_fact: package_name=curl
+  when: ansible_os_family == "Debian"
+- set_fact: package_name=software-properties-common
+  when: ansible_os_family == "Debian"
+- name: Add Docker GPG apt Key
+  apt_key:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    state: present
+  when: ansible_os_family == "Debian"
+- name: Add Docker Repository
+  apt_repository:
+    repo: deb https://download.docker.com/linux/ubuntu bionic stable
+    state: present
+  when: ansible_os_family == "Debian"
+- name: Update apt and install docker-ce
+  apt: name=docker-ce state=latest update_cache=yes
+  when: ansible_os_family == "Debian"
+- name: Install Docker Module for Python
+  pip:
+    name: docker
+  when: ansible_os_family == "Debian"
+- name: install docker-ce
+  dnf:
+    name: docker-ce
+    state: latest
+  when: ansible_os_family == "Redhat"
+- name: start docker
+  service: 
+    name: docker
+    state: started
+    enabled: yes
+  when: ansible_os_family == "Redhat"

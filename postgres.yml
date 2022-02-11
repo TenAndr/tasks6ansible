@@ -1,0 +1,29 @@
+---
+- hosts: db
+  vars_files: /etc/ansible/vars.yml
+  become: yes
+  tasks:
+ 
+  - name: install postgres
+    apt: name={{ item }} state=latest update_cache=yes
+    loop: [ 'postgresql-{{ version }}', 'postgresql-contrib' ]
+   
+  - name: data
+    ansible.builtin.lineinfile:
+      path: /etc/postgresql/{{ version }}/main/postgresql.conf
+      regexp: "^data_directory = '/var/lib/postgresql/{{ version }}/main'"
+      line: data_directory = '{{ db }}'
+  
+  - name: rsync database
+    command: rsync -av /var/lib/postgresql {{ db }}
+
+  - name: start
+    service:
+      name: postgresql
+      state: started
+      enabled: yes
+  - name: restart postgresql
+    service:
+      name: postgresql@{{ version }}-main
+      state: restarted
+

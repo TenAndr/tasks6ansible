@@ -1,0 +1,2 @@
+db: /usr/local/postgresql/12/main/
+version: 12
